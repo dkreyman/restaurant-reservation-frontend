@@ -20,6 +20,10 @@ function NewReservation() {
       ...formData,
       [target.name]: target.value,
     });
+    console.log(
+      target.value,
+      new Date().getTime() - new Date("07-02-2021").getTime()
+    );
     HandleErrors(target, formError, setFormError);
   };
   const history = useHistory();
