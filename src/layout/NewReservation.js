@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { createReservation } from "../utils/api";
+import ErrorDisplay from "./ErrorDisplay";
+import HandleErrors from "./HandleErrors";
+import { today } from "../utils/date-time";
 function NewReservation() {
   const initialFormState = {
     first_name: "",
@@ -11,24 +14,29 @@ function NewReservation() {
     people: "",
   };
   const [formData, setFormData] = useState({ ...initialFormState });
+  const [formError, setFormError] = useState(new Map());
   const handleChange = ({ target }) => {
     setFormData({
       ...formData,
       [target.name]: target.value,
     });
+    HandleErrors(target, formError, setFormError);
   };
   const history = useHistory();
   const handleSubmit = (event) => {
     event.preventDefault();
-    history.push("/dashboard");
-    createReservation(formData);
+    if (!formError) {
+      history.push("/dashboard");
+      createReservation(formData);
 
-    setFormData({ ...initialFormState });
+      setFormData({ ...initialFormState });
+    }
   };
   const goToPreviousPath = () => {
     setFormData({ ...initialFormState });
     history.goBack();
   };
+
   return (
     <>
       <div className="container">
@@ -44,6 +52,7 @@ function NewReservation() {
         </nav>
         <h1>New Reservation</h1>
       </div>
+      {ErrorDisplay(formError)}
       <div className="container">
         <form onSubmit={handleSubmit}>
           <div className="form-group">
@@ -99,6 +108,7 @@ function NewReservation() {
                 type="date"
                 name="reservation_date"
                 placeholder="Reservation Date"
+                min={today()}
                 onChange={handleChange}
                 value={formData.reservation_date}
               />
