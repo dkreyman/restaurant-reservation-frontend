@@ -12,7 +12,7 @@ function ErrorDisplay(errors) {
   if (errors) {
     let err = Array.from(errors.values());
     return err.map((value) => {
-      return <div className="alert alert-danger m-2">Error: {value}</div>;
+      return <div className="alert alert-danger m-2">{value}</div>;
     });
   }
 }

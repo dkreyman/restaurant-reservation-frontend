@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { createReservation } from "../utils/api";
-import ErrorDisplay from "./ErrorDisplay";
-import HandleErrors from "./HandleErrors";
+// import ErrorDisplay from "./ErrorDisplay";
+// import HandleErrors from "./HandleErrors";
 import { today } from "../utils/date-time";
+import ErrorAlert from "./ErrorAlert";
 function NewReservation() {
   const initialFormState = {
     first_name: "",
@@ -14,27 +15,34 @@ function NewReservation() {
     people: "",
   };
   const [formData, setFormData] = useState({ ...initialFormState });
-  const [formError, setFormError] = useState(new Map());
+  // const [formError, setFormError] = useState(new Map());
+  const [formError, setFormError] = useState();
   const handleChange = ({ target }) => {
-    setFormData({
-      ...formData,
-      [target.name]: target.value,
-    });
-    console.log(
-      target.value,
-      new Date().getTime() - new Date("07-02-2021").getTime()
-    );
-    HandleErrors(target, formError, setFormError);
+    if (target.name === "people") {
+      setFormData({
+        ...formData,
+        [target.name]: parseInt(target.value),
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [target.name]: target.value,
+      });
+    }
+
+    // HandleErrors(target, formError, setFormError);
   };
   const history = useHistory();
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (!formError) {
-      history.push("/dashboard");
-      createReservation(formData);
-
-      setFormData({ ...initialFormState });
-    }
+    createReservation({ data: formData })
+      .then((res) => {
+        history.push("/dashboard");
+        setFormData({ ...initialFormState });
+        setFormError();
+      })
+      .catch((err) => setFormError(err));
+    console.log(formError);
   };
   const goToPreviousPath = () => {
     setFormData({ ...initialFormState });
@@ -56,7 +64,7 @@ function NewReservation() {
         </nav>
         <h1>New Reservation</h1>
       </div>
-      {ErrorDisplay(formError)}
+      {ErrorAlert(formError)}
       <div className="container">
         <form onSubmit={handleSubmit}>
           <div className="form-group">
