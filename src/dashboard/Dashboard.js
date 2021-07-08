@@ -111,7 +111,7 @@ function Dashboard({ date }) {
               <div class="d-flex">
                 <p class="d-flex m-3">Capacity: {table.capacity}</p>
                 <p data-table-id-status={table.table_id} class="d-flex m-3">
-                  {table.reservation_id}
+                  Status: {table.occupied} {table.reservation_id}
                 </p>
               </div>
             </div>
