@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Link, useHistory } from "react-router-dom";
+import { Link, useHistory, useLocation } from "react-router-dom";
+import queryString from "querystring";
 import { listReservations, listTables } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 import { next, previous, today } from "../utils/date-time";
@@ -11,8 +12,13 @@ import { freeTable } from "../utils/api";
  *  the date for which the user wants to view reservations.
  * @returns {JSX.Element}
  */
-function Dashboard({ date }) {
-  const history = useHistory();
+function Dashboard() {
+  const { search } = useLocation();
+  const values = queryString.parse(search);
+  let date = values["?date"];
+  if (!date) {
+    date = today();
+  }
   const [reservations, setReservations] = useState([]);
   const [tables, setTables] = useState([]);
   const [tablesError, setTablesError] = useState();
@@ -27,9 +33,12 @@ function Dashboard({ date }) {
   const handleToday = () => {
     setThisDate(today(thisDate));
   };
-  useEffect(loadReservations, [thisDate]);
-  useEffect(loadTables, [tables]);
   date = thisDate;
+  useEffect(loadDashBoard, [thisDate, tables]);
+  function loadDashBoard() {
+    loadReservations();
+    loadTables();
+  }
   function loadReservations() {
     const abortControllerRes = new AbortController();
     setReservationsError();
@@ -84,6 +93,14 @@ function Dashboard({ date }) {
               <div class="d-flex">
                 <p class="d-flex m-3">Phone #: {reservation.mobile_number}</p>
                 <p class="d-flex m-3">Date: {reservation.reservation_date}</p>
+              </div>
+              <div class="d-flex">
+                <p
+                  data-reservation-id-status={reservation.reservation_id}
+                  class="d-flex m-3"
+                >
+                  Status: {reservation.status}
+                </p>
                 <p class="d-flex m-3">
                   Reservation #: {reservation.reservation_id}
                 </p>
@@ -97,13 +114,15 @@ function Dashboard({ date }) {
               >
                 Edit
               </Link>
-              <Link
-                to={`/reservations/${reservation.reservation_id}/seat`}
-                type="button"
-                className="btn btn-secondary mr-2 btn-md"
-              >
-                Seat
-              </Link>
+              {reservation.status === "booked" && (
+                <Link
+                  to={`/reservations/${reservation.reservation_id}/seat`}
+                  type="button"
+                  className="btn btn-secondary mr-2 btn-md"
+                >
+                  Seat
+                </Link>
+              )}
             </div>
           </div>
         );

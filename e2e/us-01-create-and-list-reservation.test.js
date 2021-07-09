@@ -1,5 +1,5 @@
 const puppeteer = require("puppeteer");
-const { setDefaultOptions } = require('expect-puppeteer');
+const { setDefaultOptions } = require("expect-puppeteer");
 const fs = require("fs");
 const fsPromises = fs.promises;
 
@@ -34,42 +34,41 @@ describe("US-01 - Create and list reservations - E2E", () => {
   describe("/reservations/new page", () => {
     test("filling and submitting form creates a new reservation and then displays the dashboard for the reservation date", async () => {
       const lastName = Date.now().toString(10);
-
+      console.log("line 37");
       await page.type("input[name=first_name]", "James");
       await page.type("input[name=last_name]", lastName);
       await page.type("input[name=mobile_number]", "555-1212");
       await page.type("input[name=reservation_date]", "01012035");
       await page.type("input[name=reservation_time]", "1330");
       await page.type("input[name=people]", "2");
-
+      console.log("line 44");
       await page.screenshot({
         path: ".screenshots/us-01-submit-before.png",
         fullPage: true,
       });
-
       await Promise.all([
         page.click("[type=submit]"),
         page.waitForNavigation({ waitUntil: "networkidle0" }),
       ]);
-
       await page.screenshot({
         path: ".screenshots/us-01-submit-after.png",
         fullPage: true,
       });
-
       await expect(page).toMatch(lastName);
     });
 
     test("canceling form returns to previous page", async () => {
+      console.log(61);
       await page.goto(`${baseURL}/dashboard`, { waitUntil: "networkidle0" });
+      console.log(63);
       await page.goto(`${baseURL}/reservations/new`, {
         waitUntil: "networkidle0",
       });
-
+      console.log(65);
       const [cancelButton] = await page.$x(
         "//button[contains(translate(., 'ACDEFGHIJKLMNOPQRSTUVWXYZ', 'acdefghijklmnopqrstuvwxyz'), 'cancel')]"
       );
-
+      console.log(69);
       if (!cancelButton) {
         throw new Error("button containing cancel not found.");
       }
@@ -78,7 +77,7 @@ describe("US-01 - Create and list reservations - E2E", () => {
         path: ".screenshots/us-01-cancel-before.png",
         fullPage: true,
       });
-
+      console.log(78);
       await Promise.all([
         cancelButton.click(),
         page.waitForNavigation({ waitUntil: "networkidle0" }),
