@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { listReservations, listTables } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 import { next, previous, today } from "../utils/date-time";
+import { freeTable } from "../utils/api";
 
 /**
  * Defines the dashboard page.
@@ -11,6 +12,7 @@ import { next, previous, today } from "../utils/date-time";
  * @returns {JSX.Element}
  */
 function Dashboard({ date }) {
+  const history = useHistory();
   const [reservations, setReservations] = useState([]);
   const [tables, setTables] = useState([]);
   const [tablesError, setTablesError] = useState();
@@ -25,22 +27,41 @@ function Dashboard({ date }) {
   const handleToday = () => {
     setThisDate(today(thisDate));
   };
-  useEffect(loadDashboard, [thisDate]);
+  useEffect(loadReservations, [thisDate]);
+  useEffect(loadTables, [tables]);
   date = thisDate;
-  function loadDashboard() {
+  function loadReservations() {
     const abortControllerRes = new AbortController();
-    const abortControllerTbl = new AbortController();
     setReservationsError();
     listReservations({ date }, abortControllerRes.signal)
       .then(setReservations)
       .catch(setReservationsError);
-    listTables({ date }, abortControllerTbl.signal)
-      .then(setTables)
-      .catch(setTablesError);
     return () => {
       abortControllerRes.abort();
+    };
+  }
+  function loadTables() {
+    const abortControllerTbl = new AbortController();
+
+    listTables(abortControllerTbl.signal).then(setTables).catch(setTablesError);
+    return () => {
       abortControllerTbl.abort();
     };
+  }
+  function handleFreeTable(table_id) {
+    let finish = window.confirm(
+      "Is this table ready to seat new guests? This cannot be undone."
+    );
+    if (finish === true) {
+      const abortControllerFre = new AbortController();
+      freeTable(table_id, abortControllerFre.signal)
+        .then((res) => res)
+        .catch(setTablesError);
+
+      return () => {
+        abortControllerFre.abort();
+      };
+    }
   }
   return (
     <main>
@@ -63,6 +84,9 @@ function Dashboard({ date }) {
               <div class="d-flex">
                 <p class="d-flex m-3">Phone #: {reservation.mobile_number}</p>
                 <p class="d-flex m-3">Date: {reservation.reservation_date}</p>
+                <p class="d-flex m-3">
+                  Reservation #: {reservation.reservation_id}
+                </p>
               </div>
             </div>
             <div class=" p-3 d-flex justify-content-end align-items-center">
@@ -111,9 +135,22 @@ function Dashboard({ date }) {
               <div class="d-flex">
                 <p class="d-flex m-3">Capacity: {table.capacity}</p>
                 <p data-table-id-status={table.table_id} class="d-flex m-3">
-                  Status: {table.occupied} {table.reservation_id}
+                  Status: {table.occupied} Reservation:
+                  {table.reservation_id}
                 </p>
               </div>
+            </div>
+            <div class=" p-3 d-flex justify-content-end align-items-center">
+              {table.occupied === "occupied" && (
+                <button
+                  data-table-id-finish={table.table_id}
+                  type="button"
+                  className="btn btn-danger mr-2 btn-md"
+                  onClick={() => handleFreeTable(table.table_id)}
+                >
+                  Finish
+                </button>
+              )}
             </div>
           </div>
         );

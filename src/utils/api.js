@@ -68,11 +68,8 @@ export async function listReservations(params, signal) {
     .then(formatReservationTime);
 }
 
-export async function listTables(params, signal) {
+export async function listTables(signal) {
   const url = new URL(`${API_BASE_URL}/tables`);
-  Object.entries(params).forEach(([key, value]) =>
-    url.searchParams.append(key, value.toString())
-  );
   return await fetchJson(url, { headers, signal }, []);
 }
 
@@ -96,4 +93,21 @@ export async function createTable(reservation, signal) {
     signal,
   };
   return await fetchJson(url, options, {});
+}
+
+export async function assignReservation(reservation_id, table_id, signal) {
+  const url = `${API_BASE_URL}/tables/${table_id}/seat`;
+  const options = {
+    method: "PUT",
+    headers,
+    body: JSON.stringify(reservation_id),
+    signal,
+  };
+  return await fetchJson(url, options, {});
+}
+
+export async function freeTable(table_id, signal) {
+  const url = `${API_BASE_URL}/tables/${table_id}/seat`;
+  const options = { method: "DELETE", signal };
+  return await fetchJson(url, options);
 }

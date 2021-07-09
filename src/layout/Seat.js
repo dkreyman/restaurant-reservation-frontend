@@ -1,38 +1,49 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { listTables } from "../utils/api";
 import { useHistory } from "react-router-dom";
-import { createReservation } from "../utils/api";
-import { today } from "../utils/date-time";
 import ErrorAlert from "./ErrorAlert";
+import { assignReservation } from "../utils/api";
 function Seat() {
   const initialFormState = {
-    first_name: "",
-    last_name: "",
-    mobile_number: "",
-    reservation_date: "",
-    reservation_time: "",
-    people: "",
+    table_id: "",
   };
   const [formData, setFormData] = useState({ ...initialFormState });
   const [formError, setFormError] = useState();
+  const [tables, setTables] = useState([]);
+  const [tablesError, setTablesError] = useState();
   const handleChange = ({ target }) => {
-    if (target.name === "people") {
-      setFormData({
-        ...formData,
-        [target.name]: parseInt(target.value),
-      });
-    } else {
-      setFormData({
-        ...formData,
-        [target.name]: target.value,
-      });
-    }
-
-    // HandleErrors(target, formError, setFormError);
+    setFormData({
+      ...formData,
+      [target.name]: target.value,
+    });
   };
+  useEffect(getTables, []);
+  function getTables() {
+    const abortController = new AbortController();
+    listTables(abortController.signal).then(setTables).catch(setTablesError);
+    return () => {
+      abortController.abort();
+    };
+  }
+
+  function selectItems(tables) {
+    let items = [];
+    tables.forEach((table) => {
+      items.push(
+        <option value={table.table_id}>
+          {table.table_name} - {table.capacity}
+        </option>
+      );
+    });
+    return items;
+  }
   const history = useHistory();
   const handleSubmit = (event) => {
     event.preventDefault();
-    createReservation({ data: formData })
+    const myUrl = new URL(document.location).pathname.split("/");
+    const reservation_id = parseInt(myUrl[2]);
+    console.log("form", reservation_id);
+    assignReservation({ data: { reservation_id } }, formData.table_id)
       .then((res) => {
         history.push("/dashboard");
         setFormData({ ...initialFormState });
@@ -55,101 +66,28 @@ function Seat() {
               <a href="/">Home</a>
             </li>
             <li className="breadcrumb-item active" aria-current="page">
-              New Reservation
+              Seat Party
             </li>
           </ol>
         </nav>
-        <h1>New Reservation</h1>
+        <h1>Seat Party</h1>
       </div>
       {ErrorAlert(formError)}
+      {ErrorAlert(tablesError)}
       <div className="container">
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="first_name">
-              First Name:
-              <input
-                className="form-control d-inline"
-                id="first_name"
-                type="text"
-                name="first_name"
-                placeholder="First Name"
+            <label htmlFor="table_id">
+              Tables:
+              <select
+                id="table_id"
+                name="table_id"
                 onChange={handleChange}
-                value={formData.first_name}
-              />
-            </label>
-          </div>
-          <div className="form-group">
-            <label htmlFor="last_name">
-              Last Name:
-              <input
-                className="form-control d-inline"
-                id="last_name"
-                type="text"
-                name="last_name"
-                placeholder="Last Name"
-                onChange={handleChange}
-                value={formData.last_name}
-              />
-            </label>
-          </div>
-          <div className="form-group">
-            <label htmlFor="mobile_number">
-              Phone Number:
-              <input
-                className="form-control d-inline"
-                id="mobile_number"
-                type="tel"
-                name="mobile_number"
-                placeholder="123-456-7899"
-                pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
-                required
-                onChange={handleChange}
-                value={formData.mobile_number}
-              />
-            </label>
-          </div>
-          <div className="form-group">
-            <label htmlFor="reservation_date">
-              Reservation Date:
-              <input
-                className="form-control d-inline"
-                id="reservation_date"
-                type="date"
-                name="reservation_date"
-                placeholder="Reservation Date"
-                min={today()}
-                onChange={handleChange}
-                value={formData.reservation_date}
-              />
-            </label>
-          </div>
-          <div className="form-group">
-            <label htmlFor="reservation_time">
-              Reservation Time:
-              <input
-                className="form-control d-inline"
-                id="reservation_time"
-                type="time"
-                name="reservation_time"
-                placeholder="Reservation Time"
-                onChange={handleChange}
-                value={formData.reservation_time}
-              />
-            </label>
-          </div>
-          <div className="form-group">
-            <label htmlFor="people">
-              # 0f People:
-              <input
-                className="form-control d-inline"
-                id="people"
-                type="number"
-                name="people"
-                min="1"
-                placeholder="#"
-                onChange={handleChange}
-                value={formData.people}
-              />
+                value={formData.table_id}
+              >
+                <option value="">-- Select an Option --</option>
+                {selectItems(tables)}
+              </select>
             </label>
           </div>
           <br />
