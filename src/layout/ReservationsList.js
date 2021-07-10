@@ -71,13 +71,13 @@ function ReservationsList(props) {
                   Edit
                 </Link>
 
-                <Link
-                  to={`/reservations/${reservation.reservation_id}/seat`}
+                <a
+                  href={`/reservations/${reservation.reservation_id}/seat`}
                   type="button"
                   className="btn btn-secondary mr-2 btn-md"
                 >
                   Seat
-                </Link>
+                </a>
               </>
             )}
             <div class=" p-3 d-flex justify-content-end align-items-center">

@@ -1,10 +1,7 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { createReservation } from "../utils/api";
-// import ErrorDisplay from "./ErrorDisplay";
-// import HandleErrors from "./HandleErrors";
 import { formatAsDate } from "../utils/date-time";
-import { today } from "../utils/date-time";
 import ErrorAlert from "./ErrorAlert";
 function NewReservation() {
   const initialFormState = {
@@ -17,35 +14,31 @@ function NewReservation() {
     status: "booked",
   };
   const [formData, setFormData] = useState({ ...initialFormState });
-  // const [formError, setFormError] = useState(new Map());
   const [formError, setFormError] = useState();
   const handleChange = ({ target }) => {
+    setFormData({
+      ...formData,
+      [target.name]: target.value,
+    });
     if (target.name === "people") {
       setFormData({
         ...formData,
         [target.name]: parseInt(target.value),
       });
-    } else {
-      setFormData({
-        ...formData,
-        [target.name]: target.value,
-      });
     }
-
-    // HandleErrors(target, formError, setFormError);
   };
   const history = useHistory();
   const handleSubmit = (event) => {
     event.preventDefault();
     formData.reservation_date = formatAsDate(formData.reservation_date);
+
     createReservation({ data: formData })
       .then((res) => {
         history.push(`/dashboard/?date=${formData.reservation_date}`);
         setFormData({ ...initialFormState });
         setFormError();
       })
-      .catch((err) => setFormError(err));
-    console.log(formError);
+      .catch(setFormError);
   };
   const goToPreviousPath = () => {
     setFormData({ ...initialFormState });
@@ -68,6 +61,7 @@ function NewReservation() {
         <h1>New Reservation</h1>
       </div>
       {ErrorAlert(formError)}
+      {/* {ErrorDisplay(formError2)} */}
       <div className="container">
         <form onSubmit={handleSubmit}>
           <div className="form-group">
@@ -123,7 +117,7 @@ function NewReservation() {
                 type="date"
                 name="reservation_date"
                 placeholder="Reservation Date"
-                min={today()}
+                // min={today()}
                 onChange={handleChange}
                 value={formData.reservation_date}
               />

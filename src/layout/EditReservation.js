@@ -135,7 +135,6 @@ function EditReservation() {
                 type="date"
                 name="reservation_date"
                 placeholder="Reservation Date"
-                min={today()}
                 onChange={handleChange}
                 value={formData.reservation_date}
               />
