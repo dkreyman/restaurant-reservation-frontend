@@ -171,6 +171,7 @@ function EditReservation() {
           </div>
           <br />
           <button
+            data-reservation-id-cancel={formData.reservation_id}
             type="button"
             className="btn btn-secondary btn-md mr-2"
             onClick={goToPreviousPath}

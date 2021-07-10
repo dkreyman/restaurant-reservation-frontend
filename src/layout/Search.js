@@ -22,6 +22,7 @@ function Search() {
   };
   const history = useHistory();
   const handleSubmit = (event) => {
+    event.preventDefault();
     const abortControllerRes = new AbortController();
     listReservations(
       { mobile_number: formData["mobile_number"] },
@@ -87,11 +88,8 @@ function Search() {
           >
             Cancel
           </button>
-          <button
-            className="btn btn-primary btn-md"
-            type="button"
-            onClick={handleSubmit}
-          >
+
+          <button className="btn btn-primary btn-md" type="submit">
             Find
           </button>
         </form>

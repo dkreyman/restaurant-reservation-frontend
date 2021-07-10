@@ -63,13 +63,13 @@ function ReservationsList(props) {
           <div class=" p-3 d-flex justify-content-end align-items-center">
             {reservation.status === "booked" && (
               <>
-                <Link
-                  to={`/reservations/${reservation.reservation_id}/edit`}
+                <a
+                  href={`/reservations/${reservation.reservation_id}/edit`}
                   type="button"
                   className="btn btn-secondary mr-2 btn-md"
                 >
                   Edit
-                </Link>
+                </a>
 
                 <a
                   href={`/reservations/${reservation.reservation_id}/seat`}

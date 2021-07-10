@@ -246,28 +246,28 @@ describe("US-04 - Seat reservation - E2E", () => {
     });
 
     // eslint-disable-next-line no-template-curly-in-string
-    test.only("seat button has href with /reservations/${reservation_id}/seat", async () => {
+    test("seat button has href with /reservations/${reservation_id}/seat", async () => {
       await page.screenshot({
         path: ".screenshots/us-04-dashboard-seat-button-before.png",
         fullPage: true,
       });
 
       const hrefSelector = `[href="/reservations/${reservation.reservation_id}/seat"]`;
-      console.log("256");
+
       await page.waitForSelector(hrefSelector);
-      console.log("258");
+
       await page.screenshot({
         path: ".screenshots/us-04-dashboard-seat-button-after.png",
         fullPage: true,
       });
-      console.log("263");
+
       const containsSeat = await page.evaluate((hrefSelector) => {
         return document
           .querySelector(hrefSelector)
           .innerText.toLowerCase()
           .includes("seat");
       }, hrefSelector);
-      console.log("270");
+
       expect(containsSeat).toBe(true);
     });
   });
