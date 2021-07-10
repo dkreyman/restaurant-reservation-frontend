@@ -57,7 +57,7 @@ describe("US-01 - Create and list reservations - E2E", () => {
       await expect(page).toMatch(lastName);
     });
 
-    test("canceling form returns to previous page", async () => {
+    test.only("canceling form returns to previous page", async () => {
       console.log(61);
       await page.goto(`${baseURL}/dashboard`, { waitUntil: "networkidle0" });
       console.log(63);

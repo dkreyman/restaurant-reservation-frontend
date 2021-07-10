@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { createTable } from "../utils/api";
-import { today } from "../utils/date-time";
 import ErrorAlert from "./ErrorAlert";
 function NewTable() {
   const initialFormState = {

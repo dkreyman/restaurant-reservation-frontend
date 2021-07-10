@@ -41,8 +41,8 @@ function NewReservation() {
       .catch(setFormError);
   };
   const goToPreviousPath = () => {
+    history.go(-1);
     setFormData({ ...initialFormState });
-    history.goBack();
   };
 
   return (
@@ -158,7 +158,7 @@ function NewReservation() {
             className="btn btn-secondary btn-md mr-2"
             onClick={goToPreviousPath}
           >
-            Cancel
+            cancel
           </button>
           <button className="btn btn-primary btn-md" type="submit">
             Submit

@@ -1,10 +1,12 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
 import ErrorAlert from "./ErrorAlert";
 import { updateResStatus } from "../utils/api";
+import { useHistory } from "react-router";
 
 function ReservationsList(props) {
   const [reservationsError, setReservationsError] = useState();
+  const history = useHistory();
+
   let handleCancelRes = (reservation) => {
     let cancel = window.confirm(
       "Do you want to cancel this reservation? This cannot be undone."
@@ -19,6 +21,7 @@ function ReservationsList(props) {
       )
         .then((res) => res)
         .catch(setReservationsError);
+      history.go(0);
       return () => {
         abortControllerStat.abort();
       };
@@ -35,32 +38,32 @@ function ReservationsList(props) {
     return (
       <>
         {ErrorAlert(reservationsError)}
-        <div className="card mt-2 pt-3">
+        <div key={reservation.reservation_id} className="card mt-2 pt-3">
           <div className="card-body">
-            <h3 class="d-flex m-3">
+            <h3 className="d-flex m-3">
               {reservation.first_name} {reservation.last_name}
             </h3>
-            <div class="d-flex">
-              <p class="d-flex m-3">Time: {reservation.reservation_time}</p>
-              <p class="d-flex m-3">People: {reservation.people}</p>
+            <div className="d-flex">
+              <p className="d-flex m-3">Time: {reservation.reservation_time}</p>
+              <p className="d-flex m-3">People: {reservation.people}</p>
             </div>
-            <div class="d-flex">
-              <p class="d-flex m-3">Phone #: {reservation.mobile_number}</p>
-              <p class="d-flex m-3">Date: {reservation.reservation_date}</p>
+            <div className="d-flex">
+              <p className="d-flex m-3">Phone #: {reservation.mobile_number}</p>
+              <p className="d-flex m-3">Date: {reservation.reservation_date}</p>
             </div>
-            <div class="d-flex">
+            <div className="d-flex">
               <p
                 data-reservation-id-status={reservation.reservation_id}
-                class="d-flex m-3"
+                className="d-flex m-3"
               >
                 Status: {reservation.status}
               </p>
-              <p class="d-flex m-3">
+              <p className="d-flex m-3">
                 Reservation #: {reservation.reservation_id}
               </p>
             </div>
           </div>
-          <div class=" p-3 d-flex justify-content-end align-items-center">
+          <div className=" p-3 d-flex justify-content-end align-items-center">
             {reservation.status === "booked" && (
               <>
                 <a
@@ -80,16 +83,19 @@ function ReservationsList(props) {
                 </a>
               </>
             )}
-            <div class=" p-3 d-flex justify-content-end align-items-center">
-              <button
-                data-reservation-id-cancel={reservation.reservation_id}
-                type="button"
-                className="btn btn-danger mr-2 btn-md"
-                onClick={() => handleCancelRes(reservation)}
-              >
-                Cancel
-              </button>
-            </div>
+            {reservation.status !== "cancelled" &&
+              reservation.status !== "finished" && (
+                <div className=" p-3 d-flex justify-content-end align-items-center">
+                  <button
+                    data-reservation-id-cancel={reservation.reservation_id}
+                    type="button"
+                    className="btn btn-danger mr-2 btn-md"
+                    onClick={() => handleCancelRes(reservation)}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              )}
           </div>
         </div>
       </>

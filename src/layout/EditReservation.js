@@ -2,10 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { updateReservation, getResById } from "../utils/api";
 import { formatAsDate } from "../utils/date-time";
-import { today } from "../utils/date-time";
 import ErrorAlert from "./ErrorAlert";
-import HandleErrors from "./HandleErrors";
-import ErrorDisplay from "./ErrorDisplay";
+
 function EditReservation() {
   let { reservation_id } = useParams();
   useEffect(() => {
@@ -17,7 +15,7 @@ function EditReservation() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [reservation_id]);
   const initialFormState = {
     first_name: "",
     last_name: "",
