@@ -108,6 +108,20 @@ export async function assignReservation(reservation_id, table_id, signal) {
 
 export async function freeTable(table_id, signal) {
   const url = `${API_BASE_URL}/tables/${table_id}/seat`;
-  const options = { method: "DELETE", signal };
+  const options = {
+    method: "DELETE",
+    signal,
+  };
   return await fetchJson(url, options);
+}
+
+export async function updateResStatus(reservation_id, thisStatus, signal) {
+  const url = `${API_BASE_URL}/reservations/${reservation_id}/status`;
+  const options = {
+    method: "PUT",
+    headers,
+    body: JSON.stringify({ data: { status: thisStatus } }),
+    signal,
+  };
+  return await fetchJson(url, options, {});
 }

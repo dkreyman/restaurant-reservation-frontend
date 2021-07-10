@@ -5,6 +5,7 @@ import { listReservations, listTables } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 import { next, previous, today } from "../utils/date-time";
 import { freeTable } from "../utils/api";
+import { updateResStatus } from "../utils/api";
 
 /**
  * Defines the dashboard page.
@@ -57,18 +58,26 @@ function Dashboard() {
       abortControllerTbl.abort();
     };
   }
-  function handleFreeTable(table_id) {
+  function handleFreeTable(table) {
     let finish = window.confirm(
       "Is this table ready to seat new guests? This cannot be undone."
     );
     if (finish === true) {
       const abortControllerFre = new AbortController();
-      freeTable(table_id, abortControllerFre.signal)
+      const abortControllerStat = new AbortController();
+      freeTable(table.table_id, abortControllerFre.signal)
         .then((res) => res)
         .catch(setTablesError);
-
+      updateResStatus(
+        table.reservation_id,
+        "finished",
+        abortControllerStat.signal
+      )
+        .then((res) => res)
+        .catch(setReservationsError);
       return () => {
         abortControllerFre.abort();
+        abortControllerStat.abort();
       };
     }
   }
@@ -165,7 +174,7 @@ function Dashboard() {
                   data-table-id-finish={table.table_id}
                   type="button"
                   className="btn btn-danger mr-2 btn-md"
-                  onClick={() => handleFreeTable(table.table_id)}
+                  onClick={() => handleFreeTable(table)}
                 >
                   Finish
                 </button>
