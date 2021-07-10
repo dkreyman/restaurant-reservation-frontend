@@ -1,12 +1,21 @@
-import React, { useState } from "react";
-import { useHistory } from "react-router-dom";
-import { createReservation } from "../utils/api";
-// import ErrorDisplay from "./ErrorDisplay";
-// import HandleErrors from "./HandleErrors";
+import React, { useState, useEffect } from "react";
+import { useHistory, useParams } from "react-router-dom";
+import { updateReservation, getResById } from "../utils/api";
 import { formatAsDate } from "../utils/date-time";
 import { today } from "../utils/date-time";
 import ErrorAlert from "./ErrorAlert";
-function NewReservation() {
+function EditReservation() {
+  let { reservation_id } = useParams();
+  useEffect(() => {
+    let isMounted = true;
+    getResById(reservation_id).then((value) => {
+      value.reservation_date = formatAsDate(value.reservation_date);
+      setFormData(value);
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
   const initialFormState = {
     first_name: "",
     last_name: "",
@@ -14,10 +23,9 @@ function NewReservation() {
     reservation_date: "",
     reservation_time: "",
     people: "",
-    status: "booked",
+    status: "",
   };
   const [formData, setFormData] = useState({ ...initialFormState });
-  // const [formError, setFormError] = useState(new Map());
   const [formError, setFormError] = useState();
   const handleChange = ({ target }) => {
     if (target.name === "people") {
@@ -31,21 +39,18 @@ function NewReservation() {
         [target.name]: target.value,
       });
     }
-
-    // HandleErrors(target, formError, setFormError);
   };
   const history = useHistory();
   const handleSubmit = (event) => {
     event.preventDefault();
     formData.reservation_date = formatAsDate(formData.reservation_date);
-    createReservation({ data: formData })
+    updateReservation({ data: formData })
       .then((res) => {
         history.push(`/dashboard/?date=${formData.reservation_date}`);
         setFormData({ ...initialFormState });
         setFormError();
       })
       .catch((err) => setFormError(err));
-    console.log(formError);
   };
   const goToPreviousPath = () => {
     setFormData({ ...initialFormState });
@@ -61,11 +66,11 @@ function NewReservation() {
               <a href="/">Home</a>
             </li>
             <li className="breadcrumb-item active" aria-current="page">
-              New Reservation
+              Edit Reservation
             </li>
           </ol>
         </nav>
-        <h1>New Reservation</h1>
+        <h1>Edit Reservation</h1>
       </div>
       {ErrorAlert(formError)}
       <div className="container">
@@ -174,4 +179,4 @@ function NewReservation() {
     </>
   );
 }
-export default NewReservation;
+export default EditReservation;
