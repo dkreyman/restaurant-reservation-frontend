@@ -11,6 +11,7 @@ function Search() {
   const [formData, setFormData] = useState({ ...initialFormState });
   const [reservations, setReservations] = useState([]);
   const [reservationsError, setReservationsError] = useState();
+  const [submited, setSubmited] = useState(false);
 
   const handleChange = ({ target }) => {
     setFormData({
@@ -21,6 +22,7 @@ function Search() {
   const history = useHistory();
   const handleSubmit = (event) => {
     event.preventDefault();
+    setSubmited(true);
     const abortControllerRes = new AbortController();
     listReservations(
       { mobile_number: formData["mobile_number"] },
@@ -65,11 +67,11 @@ function Search() {
       <div className="container">
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="capacity">
+            <label htmlFor="mobile_number">
               Capacity:
               <input
                 className="form-control d-inline"
-                id="capacity"
+                id="mobile_number"
                 type="text"
                 name="mobile_number"
                 placeholder="Enter a customer's phone number"
@@ -92,7 +94,7 @@ function Search() {
           </button>
         </form>
       </div>
-      <ReservationsList reservations={reservations} />
+      <ReservationsList reservations={reservations} submited={submited} />
     </>
   );
 }

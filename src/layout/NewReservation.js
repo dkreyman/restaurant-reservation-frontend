@@ -61,7 +61,6 @@ function NewReservation() {
         <h1>New Reservation</h1>
       </div>
       {ErrorAlert(formError)}
-      {/* {ErrorDisplay(formError2)} */}
       <div className="container">
         <form onSubmit={handleSubmit}>
           <div className="form-group">
@@ -101,7 +100,6 @@ function NewReservation() {
                 type="tel"
                 name="mobile_number"
                 placeholder="123-456-7899"
-                // pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
                 required
                 onChange={handleChange}
                 value={formData.mobile_number}
@@ -117,7 +115,6 @@ function NewReservation() {
                 type="date"
                 name="reservation_date"
                 placeholder="Reservation Date"
-                // min={today()}
                 onChange={handleChange}
                 value={formData.reservation_date}
               />

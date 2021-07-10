@@ -27,7 +27,7 @@ function EditReservation() {
   };
   const [formData, setFormData] = useState({ ...initialFormState });
   const [formError, setFormError] = useState();
-  // const [permissionError, setPermissionError] = useState(new Map());
+
   const handleChange = ({ target }) => {
     if (target.name === "people") {
       setFormData({
@@ -40,13 +40,12 @@ function EditReservation() {
         [target.name]: target.value,
       });
     }
-    // HandleErrors(target.value, permissionError, setPermissionError);
   };
   const history = useHistory();
   const handleSubmit = (event) => {
     event.preventDefault();
     formData.reservation_date = formatAsDate(formData.reservation_date);
-    // if (!permissionError) {
+
     updateReservation({ data: formData })
       .then((res) => {
         history.push(`/dashboard/?date=${formData.reservation_date}`);
@@ -54,7 +53,6 @@ function EditReservation() {
         setFormError();
       })
       .catch((err) => setFormError(err));
-    // }
   };
   const goToPreviousPath = () => {
     setFormData({ ...initialFormState });
@@ -77,7 +75,6 @@ function EditReservation() {
         <h1>Edit Reservation</h1>
       </div>
       {ErrorAlert(formError)}
-      {/* {ErrorDisplay(permissionError)} */}
       <div className="container">
         <form onSubmit={handleSubmit}>
           <div className="form-group">
@@ -117,7 +114,6 @@ function EditReservation() {
                 type="tel"
                 name="mobile_number"
                 placeholder="123-456-7899"
-                // pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
                 required
                 onChange={handleChange}
                 value={formData.mobile_number}

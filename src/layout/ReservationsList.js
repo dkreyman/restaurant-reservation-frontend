@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import ErrorAlert from "./ErrorAlert";
 import { updateResStatus } from "../utils/api";
 import { useHistory } from "react-router";
+import { Link } from "react-router-dom";
 
 function ReservationsList(props) {
   const [reservationsError, setReservationsError] = useState();
@@ -27,7 +28,7 @@ function ReservationsList(props) {
       };
     }
   };
-  if (!props.reservations.length) {
+  if (!props.reservations.length && props.submited) {
     return (
       <div className="d-md-flex mb-3 m-3">
         <h4 className="mb-0">No reservations found</h4>
@@ -66,21 +67,21 @@ function ReservationsList(props) {
           <div className=" p-3 d-flex justify-content-end align-items-center">
             {reservation.status === "booked" && (
               <>
-                <a
-                  href={`/reservations/${reservation.reservation_id}/edit`}
+                <Link
+                  to={`/reservations/${reservation.reservation_id}/edit`}
                   type="button"
                   className="btn btn-secondary mr-2 btn-md"
                 >
                   Edit
-                </a>
+                </Link>
 
-                <a
-                  href={`/reservations/${reservation.reservation_id}/seat`}
+                <Link
+                  to={`/reservations/${reservation.reservation_id}/seat`}
                   type="button"
                   className="btn btn-secondary mr-2 btn-md"
                 >
                   Seat
-                </a>
+                </Link>
               </>
             )}
             {reservation.status !== "cancelled" &&
