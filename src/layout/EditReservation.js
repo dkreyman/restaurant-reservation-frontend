@@ -4,6 +4,8 @@ import { updateReservation, getResById } from "../utils/api";
 import { formatAsDate } from "../utils/date-time";
 import { today } from "../utils/date-time";
 import ErrorAlert from "./ErrorAlert";
+import HandleErrors from "./HandleErrors";
+import ErrorDisplay from "./ErrorDisplay";
 function EditReservation() {
   let { reservation_id } = useParams();
   useEffect(() => {
@@ -27,6 +29,7 @@ function EditReservation() {
   };
   const [formData, setFormData] = useState({ ...initialFormState });
   const [formError, setFormError] = useState();
+  // const [permissionError, setPermissionError] = useState(new Map());
   const handleChange = ({ target }) => {
     if (target.name === "people") {
       setFormData({
@@ -39,11 +42,13 @@ function EditReservation() {
         [target.name]: target.value,
       });
     }
+    // HandleErrors(target.value, permissionError, setPermissionError);
   };
   const history = useHistory();
   const handleSubmit = (event) => {
     event.preventDefault();
     formData.reservation_date = formatAsDate(formData.reservation_date);
+    // if (!permissionError) {
     updateReservation({ data: formData })
       .then((res) => {
         history.push(`/dashboard/?date=${formData.reservation_date}`);
@@ -51,6 +56,7 @@ function EditReservation() {
         setFormError();
       })
       .catch((err) => setFormError(err));
+    // }
   };
   const goToPreviousPath = () => {
     setFormData({ ...initialFormState });
@@ -73,6 +79,7 @@ function EditReservation() {
         <h1>Edit Reservation</h1>
       </div>
       {ErrorAlert(formError)}
+      {/* {ErrorDisplay(permissionError)} */}
       <div className="container">
         <form onSubmit={handleSubmit}>
           <div className="form-group">
