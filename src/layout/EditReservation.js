@@ -7,13 +7,13 @@ import ErrorAlert from "./ErrorAlert";
 function EditReservation() {
   let { reservation_id } = useParams();
   useEffect(() => {
-    let isMounted = true;
-    getResById(reservation_id).then((value) => {
+    const abortController = new AbortController();
+    getResById(reservation_id, abortController.signal).then((value) => {
       value.reservation_date = formatAsDate(value.reservation_date);
       setFormData(value);
     });
     return () => {
-      isMounted = false;
+      abortController.abort();
     };
   }, [reservation_id]);
   const initialFormState = {

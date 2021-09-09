@@ -31,14 +31,17 @@ function NewReservation() {
   const handleSubmit = (event) => {
     event.preventDefault();
     formData.reservation_date = formatAsDate(formData.reservation_date);
-
-    createReservation({ data: formData })
+    const abortController = new AbortController();
+    createReservation({ data: formData }, abortController.signal)
       .then((res) => {
         history.push(`/dashboard/?date=${formData.reservation_date}`);
         setFormData({ ...initialFormState });
         setFormError();
       })
       .catch(setFormError);
+    return () => {
+      abortController.abort();
+    };
   };
   const goToPreviousPath = () => {
     history.go(-1);

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import queryString from "querystring";
 import { listReservations, listTables } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 import { next, previous, today } from "../utils/date-time";
@@ -16,8 +15,8 @@ import ReservationsList from "../layout/ReservationsList";
  */
 function Dashboard() {
   const { search } = useLocation();
-  const values = queryString.parse(search);
-  let date = values["?date"];
+  const params = new URLSearchParams(search);
+  let date = params.get("date");
   if (!date) {
     date = today();
   }
@@ -62,7 +61,7 @@ function Dashboard() {
     };
 
     loadReservations();
-  }, [date]);
+  }, [date, reservations]);
 
   function handleFreeTable(table) {
     let finish = window.confirm(

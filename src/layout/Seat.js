@@ -17,7 +17,6 @@ function Seat() {
       [target.name]: target.value,
     });
   };
-  useEffect(getTables, []);
   function getTables() {
     const abortController = new AbortController();
     listTables(abortController.signal).then(setTables).catch(setTablesError);
@@ -25,6 +24,7 @@ function Seat() {
       abortController.abort();
     };
   }
+  useEffect(getTables, []);
 
   function selectItems(tables) {
     let items = [];
